@@ -60,8 +60,8 @@ Copyright (c) 2016, NVIDIA CORPORATION. All rights reserved.
 #define GCF_GRID 8
 //BLOCK_Y affects only MOVING_WINDOW
 #ifndef BLOCK_Y
-//#define BLOCK_Y 4 
-#define BLOCK_Y 11 
+#define BLOCK_Y 4
+//#define BLOCK_Y 11
 #endif
 //PTS and GCF_STRIPES affect only GATHER
 //#define PTS 1
@@ -77,5 +77,3 @@ Copyright (c) 2016, NVIDIA CORPORATION. All rights reserved.
 #define POLARIZATIONS 1
 //#define DEBUG1
 #endif
-
-

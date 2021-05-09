@@ -58,7 +58,7 @@ ifeq ($(HDF5_INPUT),1)
 	CFLAGS += -D__HDF5_INPUT -I$(HDF5_HOME)/include -L$(HDF5_HOME)/lib -lhdf5_cpp -lhdf5
         OBJS += hdf52struct.o
 endif
-CFLAGS += -Xcompiler -fopenmp -Xptxas -v,-abi=no
+CFLAGS += -Xcompiler -fopenmp -Xptxas "-v"
 CFLAGS += $(USERFLAGS)
 
 all:  grid GPUGrid.so

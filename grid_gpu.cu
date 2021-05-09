@@ -238,8 +238,8 @@ grid_kernel_basic(CmplxType* out, CmplxType* in, CmplxType* in_vals, size_t npts
 
 #if 0
       for(int s = blockDim.x < 16 ? blockDim.x : 16; s>0;s/=2) {
-         sum_r += __shfl_down(sum_r,s);
-         sum_i += __shfl_down(sum_i,s);
+         sum_r += __shfl_down_sync(0xFFFFFFFF,sum_r,s);
+         sum_i += __shfl_down_sync(0xFFFFFFFF,sum_i,s);
       }
       CmplxType tmp;
       tmp.x = sum_r;
@@ -312,8 +312,8 @@ grid_kernel_small_gcf(CmplxType* out, CmplxType* in, CmplxType* in_vals, size_t 
 
 #if 0
       for(int s = blockDim.x < 16 ? blockDim.x : 16; s>0;s/=2) {
-         sum_r += __shfl_down(sum_r,s);
-         sum_i += __shfl_down(sum_i,s);
+         sum_r += __shfl_down_sync(0xFFFFFFFF,sum_r,s);
+         sum_i += __shfl_down_sync(0xFFFFFFFF,sum_i,s);
       }
       CmplxType tmp;
       tmp.x = sum_r;
@@ -328,25 +328,25 @@ grid_kernel_small_gcf(CmplxType* out, CmplxType* in, CmplxType* in_vals, size_t 
 __device__ void warp_reduce(double &in, int sz = 16) {
    if (16<sz) sz=16;
    for(int s = sz; s>0;s/=2) {
-      in += __shfl_down(in,s);
+      in += __shfl_down_sync(0xFFFFFFFF,in,s);
    }
 }
 __device__ void warp_reduce(float &in, int sz = 16) {
    if (16<sz) sz=16;
    for(int s = sz; s>0;s/=2) {
-      in += __shfl_down(in,s);
+      in += __shfl_down_sync(0xFFFFFFFF,in,s);
    }
 }
 __device__ void warp_reduce2(float &in, int sz = 32) {
    if (32<sz) sz=32;
    for(int s=1; s<sz; s*=2) {
-      in += __shfl_down(in,s);
+      in += __shfl_down_sync(0xFFFFFFFF,in,s);
    } 
 }
 __device__ void warp_reduce2(double &in, int sz = 32) {
    if (32<sz) sz=32;
    for(int s=1; s<sz; s*=2) {
-      in += __shfl_down(in,s);
+      in += __shfl_down_sync(0xFFFFFFFF,in,s);
    } 
 }
 template <class CmplxType>
