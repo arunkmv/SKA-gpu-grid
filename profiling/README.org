@@ -1,6 +1,6 @@
 #+TITLE: Data transfer overhead and latency profiling
 
-* Experiments
+* GPU Experiments
 ** Default config
 *** Defines.h
 #+begin_src C
@@ -13,8 +13,8 @@
 #define GCF_GRID 8
 //BLOCK_Y affects only MOVING_WINDOW
 #ifndef BLOCK_Y
-#define BLOCK_Y 4
-//#define BLOCK_Y 11
+//#define BLOCK_Y 4
+#define BLOCK_Y 11
 #endif
 //PTS and GCF_STRIPES affect only GATHER
 //#define PTS 1
@@ -44,38 +44,41 @@
 
 
 Computing on GPU...
-==5405== NVPROF is profiling process 5405, command: ../grid
-memcpy time: 1.10589 ms.
-Processed 400000 complex points in 56.9982 ms.
-57.4895 Gflops
-==5405== Generated result file: /home/arunkmv/Projects/gpu-gridding-benchmark/SKA-gpu-grid/profiling/default_new.nvvp
+==13696== NVPROF is profiling process 13696, command: ../grid
+memcpy time: 1.10787 ms.
+Processed 400000 complex points in 60.8417 ms.
+53.8578 Gflops
+==13696== Generated result file: /home/arunkmv/Projects/gpu-gridding-benchmark/SKA-gpu-grid/profiling/default_new.nvvp
 ======== Profiling result:
             Type  Time(%)      Time     Calls       Avg       Min       Max  Name
- GPU activities:   89.22%  56.995ms         1  56.995ms  56.995ms  56.995ms  void grid_kernel_window<int=32, double2, double2>(double2*, int2*, double2*, unsigned long, int, double2*)
-                    8.55%  5.4618ms         1  5.4618ms  5.4618ms  5.4618ms  [CUDA memcpy DtoH]                    1.66%  1.0611ms         3  353.72us  82.655us  489.28us  [CUDA memcpy HtoD]                    0.56%  359.97us         1  359.97us  359.97us  359.97us  void vis2ints<double2>(double2*, int2*, int)
+ GPU activities:   89.97%  60.839ms         1  60.839ms  60.839ms  60.839ms  void grid_kernel_window<int=32, double2, double2>(double2*, int2*, double2*, unsigned long, int, double2*)
+                    7.92%  5.3526ms         1  5.3526ms  5.3526ms  5.3526ms  [CUDA memcpy DtoH]
+                    1.57%  1.0635ms         3  354.49us  82.497us  490.72us  [CUDA memcpy HtoD]
+                    0.53%  361.47us         1  361.47us  361.47us  361.47us  void vis2ints<double2>(double2*, int2*, int)
                     0.00%  1.1840us         1  1.1840us  1.1840us  1.1840us  [CUDA memset]
-      API calls:   60.50%  117.17ms         2  58.584ms     836ns  117.17ms  cudaEventCreate
-                   29.92%  57.939ms         2  28.969ms  6.1620us  57.933ms  cudaEventSynchronize
-                    4.92%  9.5324ms         4  2.3831ms  196.52us  8.6047ms  cudaHostRegister
-                    3.39%  6.5742ms         4  1.6436ms  103.54us  5.4750ms  cudaMemcpy
-                    0.72%  1.3922ms         4  348.06us  127.77us  910.99us  cudaHostUnregister                    0.31%  607.56us         5  121.51us  89.969us  162.96us  cudaMalloc
-                    0.08%  153.25us        97  1.5790us     107ns  67.948us  cuDeviceGetAttribute
-                    0.05%  104.80us         1  104.80us  104.80us  104.80us  cudaFree
-                    0.04%  68.236us         1  68.236us  68.236us  68.236us  cuDeviceTotalMem
-                    0.02%  38.065us         1  38.065us  38.065us  38.065us  cuDeviceGetName
-                    0.02%  35.893us         2  17.946us  5.4820us  30.411us  cudaLaunchKernel
-                    0.01%  18.869us         4  4.7170us  1.1750us  14.378us  cudaEventRecord
-                    0.01%  11.153us         1  11.153us  11.153us  11.153us  cudaMemset
-                    0.00%  6.1980us         1  6.1980us  6.1980us  6.1980us  cuDeviceGetPCIBusId
-                    0.00%  2.2950us         2  1.1470us     940ns  1.3550us  cudaEventElapsedTime
-                    0.00%  1.5570us         2     778ns     331ns  1.2260us  cudaEventDestroy
-                    0.00%  1.5500us         3     516ns     113ns  1.2260us  cuDeviceGetCount
-                    0.00%  1.5290us         8     191ns      80ns     349ns  cudaGetLastError
-                    0.00%     646ns         2     323ns     124ns     522ns  cuDeviceGet
-                    0.00%     185ns         1     185ns     185ns     185ns  cuDeviceGetUuid
+      API calls:   60.09%  124.76ms         2  62.378ms     691ns  124.76ms  cudaEventCreate
+                   29.80%  61.874ms         2  30.937ms  6.1770us  61.868ms  cudaEventSynchronize
+                    5.21%  10.819ms         4  2.7047ms  209.15us  9.7132ms  cudaHostRegister
+                    3.12%  6.4714ms         4  1.6179ms  103.13us  5.3696ms  cudaMemcpy
+                    1.28%  2.6473ms         4  661.83us  229.90us  1.9507ms  cudaHostUnregister
+                    0.28%  573.29us         5  114.66us  90.254us  161.16us  cudaMalloc
+                    0.07%  143.87us        97  1.4830us     102ns  63.064us  cuDeviceGetAttribute
+                    0.06%  120.78us         1  120.78us  120.78us  120.78us  cudaFree
+                    0.04%  88.330us         1  88.330us  88.330us  88.330us  cuDeviceTotalMem
+                    0.02%  40.317us         1  40.317us  40.317us  40.317us  cuDeviceGetName
+                    0.02%  32.562us         2  16.281us  5.1130us  27.449us  cudaLaunchKernel
+                    0.01%  19.701us         4  4.9250us  1.2360us  14.612us  cudaEventRecord
+                    0.01%  11.458us         1  11.458us  11.458us  11.458us  cudaMemset
+                    0.00%  5.9440us         1  5.9440us  5.9440us  5.9440us  cuDeviceGetPCIBusId
+                    0.00%  2.8700us         2  1.4350us  1.1940us  1.6760us  cudaEventElapsedTime
+                    0.00%  1.6980us         8     212ns      80ns     410ns  cudaGetLastError
+                    0.00%  1.6370us         2     818ns     360ns  1.2770us  cudaEventDestroy
+                    0.00%  1.5820us         3     527ns      97ns  1.3210us  cuDeviceGetCount
+                    0.00%     627ns         2     313ns     111ns     516ns  cuDeviceGet
+                    0.00%     157ns         1     157ns     157ns     157ns  cuDeviceGetUuid
 #+end_example
 *** nvvp
-HtoD: 13.849MB in 1.06115ms,
+HtoD: 13.849MB in 1.06646ms,
 DtoH: 69.207MB in 5.46177ms
 Serial CPU impl - 7.11s
 [[file:default.nvvp][nvvp file]]
@@ -131,12 +134,15 @@ Error 9 on line 792 of grid_gpu.cu: invalid configuration argument
 ==16269== Generated result file: /home/arunkmv/Projects/gpu-gridding-benchmark/SKA-gpu-grid/profiling/config_1
 ======== Profiling result:
             Type  Time(%)      Time     Calls       Avg       Min       Max  Name
- GPU activities:   76.79%  21.907ms         1  21.907ms  21.907ms  21.907ms  [CUDA memcpy DtoH]                   18.17%  5.1845ms         3  1.7282ms  1.2812ms  1.9521ms  [CUDA memcpy HtoD]                    5.03%  1.4342ms         1  1.4342ms  1.4342ms  1.4342ms  void vis2ints<double2>(double2*, int2*, int)
+ GPU activities:   76.79%  21.907ms         1  21.907ms  21.907ms  21.907ms  [CUDA memcpy DtoH]
+                   18.17%  5.1845ms         3  1.7282ms  1.2812ms  1.9521ms  [CUDA memcpy HtoD]
+                    5.03%  1.4342ms         1  1.4342ms  1.4342ms  1.4342ms  void vis2ints<double2>(double2*, int2*, int)
                     0.00%  1.1840us         1  1.1840us  1.1840us  1.1840us  [CUDA memset]
       API calls:   62.37%  126.34ms         2  63.169ms     717ns  126.34ms  cudaEventCreate
                    18.98%  38.442ms         4  9.6105ms  967.46us  35.076ms  cudaHostRegister
                    13.40%  27.145ms         4  6.7863ms  1.3023ms  21.921ms  cudaMemcpy
-                    2.50%  5.0600ms         4  1.2650ms  455.11us  3.5953ms  cudaHostUnregister                    2.09%  4.2338ms         2  2.1169ms  5.9300us  4.2279ms  cudaEventSynchronize
+                    2.50%  5.0600ms         4  1.2650ms  455.11us  3.5953ms  cudaHostUnregister
+                    2.09%  4.2338ms         2  2.1169ms  5.9300us  4.2279ms  cudaEventSynchronize
                     0.38%  762.90us         5  152.58us  107.59us  299.40us  cudaMalloc
                     0.12%  245.98us         1  245.98us  245.98us  245.98us  cudaFree
                     0.07%  146.26us        97  1.5070us     103ns  64.182us  cuDeviceGetAttribute
@@ -151,7 +157,8 @@ Error 9 on line 792 of grid_gpu.cu: invalid configuration argument
                     0.00%  1.5110us         3     503ns     105ns  1.2550us  cuDeviceGetCount
                     0.00%  1.5060us         2     753ns     341ns  1.1650us  cudaEventDestroy
                     0.00%     657ns         2     328ns     127ns     530ns  cuDeviceGet
-                    0.00%     299ns         1     299ns     299ns     299ns  cudaGetErrorString                    0.00%     161ns         1     161ns     161ns     161ns  cuDeviceGetUuid
+                    0.00%     299ns         1     299ns     299ns     299ns  cudaGetErrorString
+                    0.00%     161ns         1     161ns     161ns     161ns  cuDeviceGetUuid
 #+end_example
 *** nvvp
 HtoD: 67.977MB in 5.1845ms,
@@ -209,12 +216,15 @@ Error 9 on line 792 of grid_gpu.cu: invalid configuration argument
 ==18090== Generated result file: /home/arunkmv/Projects/gpu-gridding-benchmark/SKA-gpu-grid/profiling/config_2.nvvp
 ======== Profiling result:
             Type  Time(%)      Time     Calls       Avg       Min       Max  Name
- GPU activities:   90.26%  87.549ms         1  87.549ms  87.549ms  87.549ms  [CUDA memcpy DtoH]                    8.56%  8.3008ms         3  2.7669ms  1.5577ms  5.1643ms  [CUDA memcpy HtoD]                    1.19%  1.1497ms         1  1.1497ms  1.1497ms  1.1497ms  void vis2ints<double2>(double2*, int2*, int)
+ GPU activities:   90.26%  87.549ms         1  87.549ms  87.549ms  87.549ms  [CUDA memcpy DtoH]
+                    8.56%  8.3008ms         3  2.7669ms  1.5577ms  5.1643ms  [CUDA memcpy HtoD]
+                    1.19%  1.1497ms         1  1.1497ms  1.1497ms  1.1497ms  void vis2ints<double2>(double2*, int2*, int)
                     0.00%  1.2160us         1  1.2160us  1.2160us  1.2160us  [CUDA memset]
       API calls:   36.11%  150.66ms         4  37.665ms  862.16us  146.07ms  cudaHostRegister
                    32.96%  137.51ms         2  68.757ms     620ns  137.51ms  cudaEventCreate
                    22.99%  95.906ms         4  23.977ms  1.5683ms  87.564ms  cudaMemcpy
-                    4.37%  18.246ms         4  4.5615ms  443.52us  15.457ms  cudaHostUnregister                    2.96%  12.357ms         2  6.1783ms  6.3320us  12.350ms  cudaEventSynchronize
+                    4.37%  18.246ms         4  4.5615ms  443.52us  15.457ms  cudaHostUnregister
+                    2.96%  12.357ms         2  6.1783ms  6.3320us  12.350ms  cudaEventSynchronize
                     0.31%  1.3043ms         5  260.86us  100.76us  832.62us  cudaMalloc
                     0.20%  848.24us         1  848.24us  848.24us  848.24us  cudaFree
                     0.04%  170.44us        97  1.7570us     124ns  74.564us  cuDeviceGetAttribute
@@ -229,7 +239,8 @@ Error 9 on line 792 of grid_gpu.cu: invalid configuration argument
                     0.00%  1.8280us         2     914ns     376ns  1.4520us  cudaEventDestroy
                     0.00%  1.7570us         3     585ns     135ns  1.4160us  cuDeviceGetCount
                     0.00%     766ns         2     383ns     168ns     598ns  cuDeviceGet
-                    0.00%     309ns         1     309ns     309ns     309ns  cudaGetErrorString                    0.00%     206ns         1     206ns     206ns     206ns  cuDeviceGetUuid
+                    0.00%     309ns         1     309ns     309ns     309ns  cudaGetErrorString
+                    0.00%     206ns         1     206ns     206ns     206ns  cuDeviceGetUuid
 #+end_example
 *** nvvp
 HtoD: 107.546MB in 8.30078ms,
@@ -286,12 +297,15 @@ Error 9 on line 792 of grid_gpu.cu: invalid configuration argument
 ==3566== Generated result file: /home/arunkmv/Projects/gpu-gridding-benchmark/SKA-gpu-grid/profiling/config_3.nvvp
 ======== Profiling result:
             Type  Time(%)      Time     Calls       Avg       Min       Max  Name
- GPU activities:   79.77%  87.341ms         1  87.341ms  87.341ms  87.341ms  [CUDA memcpy DtoH]                   16.05%  17.578ms         3  5.8594ms  5.0599ms  6.2757ms  [CUDA memcpy HtoD]                    4.17%  4.5685ms         1  4.5685ms  4.5685ms  4.5685ms  void vis2ints<double2>(double2*, int2*, int)
+ GPU activities:   79.77%  87.341ms         1  87.341ms  87.341ms  87.341ms  [CUDA memcpy DtoH]
+                   16.05%  17.578ms         3  5.8594ms  5.0599ms  6.2757ms  [CUDA memcpy HtoD]
+                    4.17%  4.5685ms         1  4.5685ms  4.5685ms  4.5685ms  void vis2ints<double2>(double2*, int2*, int)
                     0.00%  1.1840us         1  1.1840us  1.1840us  1.1840us  [CUDA memset]
       API calls:   34.81%  144.93ms         4  36.233ms  2.2128ms  137.13ms  cudaHostRegister
                    31.52%  131.24ms         2  65.620ms     658ns  131.24ms  cudaEventCreate
                    25.21%  104.98ms         4  26.244ms  5.0831ms  87.355ms  cudaMemcpy
-                    4.43%  18.435ms         4  4.6088ms  1.0029ms  14.786ms  cudaHostUnregister                    3.43%  14.283ms         2  7.1414ms  6.0770us  14.277ms  cudaEventSynchronize
+                    4.43%  18.435ms         4  4.6088ms  1.0029ms  14.786ms  cudaHostUnregister
+                    3.43%  14.283ms         2  7.1414ms  6.0770us  14.277ms  cudaEventSynchronize
                     0.33%  1.3606ms         5  272.12us  132.22us  781.11us  cudaMalloc
                     0.19%  787.72us         1  787.72us  787.72us  787.72us  cudaFree
                     0.03%  144.82us        97  1.4930us     100ns  63.993us  cuDeviceGetAttribute
@@ -306,7 +320,8 @@ Error 9 on line 792 of grid_gpu.cu: invalid configuration argument
                     0.00%  1.7730us         8     221ns      98ns     384ns  cudaGetLastError
                     0.00%  1.5600us         3     520ns      94ns  1.3140us  cuDeviceGetCount
                     0.00%     584ns         2     292ns     135ns     449ns  cuDeviceGet
-                    0.00%     315ns         1     315ns     315ns     315ns  cudaGetErrorString                    0.00%     171ns         1     171ns     171ns     171ns  cuDeviceGetUuid
+                    0.00%     315ns         1     315ns     315ns     315ns  cudaGetErrorString
+                    0.00%     171ns         1     171ns     171ns     171ns  cuDeviceGetUuid
 #+end_example
 *** nvvp
 HtoD: 230.426MB in 17.57831ms,
@@ -364,12 +379,15 @@ Error 9 on line 792 of grid_gpu.cu: invalid configuration argument
 ==4938== Generated result file: /home/arunkmv/Projects/gpu-gridding-benchmark/SKA-gpu-grid/profiling/config_4.nvvp
 ======== Profiling result:
             Type  Time(%)      Time     Calls       Avg       Min       Max  Name
- GPU activities:   69.09%  87.848ms         1  87.848ms  87.848ms  87.848ms  [CUDA memcpy DtoH]                   23.72%  30.161ms         3  10.054ms  5.1260ms  12.555ms  [CUDA memcpy HtoD]                    7.19%  9.1437ms         1  9.1437ms  9.1437ms  9.1437ms  void vis2ints<double2>(double2*, int2*, int)
+ GPU activities:   69.09%  87.848ms         1  87.848ms  87.848ms  87.848ms  [CUDA memcpy DtoH]
+                   23.72%  30.161ms         3  10.054ms  5.1260ms  12.555ms  [CUDA memcpy HtoD]
+                    7.19%  9.1437ms         1  9.1437ms  9.1437ms  9.1437ms  void vis2ints<double2>(double2*, int2*, int)
                     0.00%  1.1840us         1  1.1840us  1.1840us  1.1840us  [CUDA memset]
       API calls:   34.03%  152.23ms         4  38.057ms  2.2597ms  139.06ms  cudaHostRegister
                    30.37%  135.83ms         2  67.915ms     780ns  135.83ms  cudaEventCreate
                    26.40%  118.07ms         4  29.517ms  5.1495ms  87.862ms  cudaMemcpy
-                    4.38%  19.575ms         4  4.8938ms  979.96us  13.831ms  cudaHostUnregister                    4.22%  18.863ms         2  9.4317ms  6.1410us  18.857ms  cudaEventSynchronize
+                    4.38%  19.575ms         4  4.8938ms  979.96us  13.831ms  cudaHostUnregister
+                    4.22%  18.863ms         2  9.4317ms  6.1410us  18.857ms  cudaEventSynchronize
                     0.36%  1.6160ms         5  323.21us  134.96us  925.52us  cudaMalloc
                     0.18%  789.84us         1  789.84us  789.84us  789.84us  cudaFree
                     0.03%  144.60us        97  1.4900us      97ns  64.587us  cuDeviceGetAttribute
@@ -384,7 +402,8 @@ Error 9 on line 792 of grid_gpu.cu: invalid configuration argument
                     0.00%  1.8000us         8     225ns      98ns     414ns  cudaGetLastError
                     0.00%  1.4890us         3     496ns     104ns  1.2380us  cuDeviceGetCount
                     0.00%     747ns         2     373ns     133ns     614ns  cuDeviceGet
-                    0.00%     268ns         1     268ns     268ns     268ns  cudaGetErrorString                    0.00%     151ns         1     151ns     151ns     151ns  cuDeviceGetUuid
+                    0.00%     268ns         1     268ns     268ns     268ns  cudaGetErrorString
+                    0.00%     151ns         1     151ns     151ns     151ns  cuDeviceGetUuid
 
 #+end_example
 *** nvvp
@@ -403,3 +422,45 @@ DtoH: 1.142GB in 87.84809ms
 HtoD: MB in ms,
 DtoH: MB in ms
 [[file:default.nvvp][nvvp file]]
+
+* CPU Experiments
+** Default config
+*** Defines.h
+#+begin_src C
+#+end_src
+*** Console output
+#+begin_example
+
+#+end_example
+*** nvvp
+HtoD: MB
+DtoH: MB
+
+** Experiment template
+*** Defines.h
+#+begin_src C
+#+end_src
+*** Console output
+#+begin_example
+
+#+end_example
+*** nvvp
+HtoD: MB
+DtoH: MB
+
+
+* Results
+** H2D data transfer analysis
+
+CUDA event time includes both CPU overhead as well as PCIe transfer latency, while the profiler time includes only the latency at the GPU side (PCIe only). Hence profiler time can be considered as latency and CUDA event time as latency + overhead.
+
+| Experiment     | Data sent (MB) | CUDA event time (ms) (L + o) | Profiler time (ms) (L) |    overhead (o) (ms) | Latency / Byte (ps/B) | PCIe throughput (GB/s) |
+|----------------+----------------+------------------------------+------------------------+----------------------+-----------------------+------------------------|
+| Default config |         13.849 |                      1.10787 |                1.06346 |  0.04440999999999984 |     76.78965990324211 |     13.022586651119928 |
+| config 1       |         67.997 |                      5.23046 |                 5.1845 |              0.04596 |        76.24601085342 |     13.115440254605073 |
+| config 2       |        107.546 |                      8.34803 |                8.30078 | 0.047250000000000014 |     77.18353076822939 |     12.956131833393972 |
+| config 3       |        230.426 |                      17.6256 |               17.57831 | 0.047290000000000276 |     76.28613958494266 |      13.10854115099802 |
+| config 4       |        394.266 |                      30.2112 |               30.16069 |  0.05051000000000272 |     76.49832853961539 |     13.072181040950987 |
+|----------------+----------------+------------------------------+------------------------+----------------------+-----------------------+------------------------|
+| Mean           |                |                              |                        |             0.047084 |             76.600734 |              13.054976 |
+#+TBLFM: $5='(- $3 $4);N::$6='(/ (* $4 1000) $2);N::$7='(/ $2 $4);N::@7$5=vmean(@2$5..@6$5)::@7$6=vmean(@2$6..@6$6)::@7$7=vmean(@2$7..@6$7)
