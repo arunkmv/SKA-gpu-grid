@@ -6,8 +6,11 @@
 #+begin_src C
 #+end_src
 *** nvprof output
+#+begin_example
+
+#+end_example
 *** nvvp
-HtoD: MB in ms
+HtoD: MB in ms,
 DtoH: MB in ms
 [[file:default.nvvp][nvvp file]]
 ** Default config
@@ -41,6 +44,8 @@ DtoH: MB in ms
 #endif
 #+end_src
 *** nvprof output
+#+begin_example
+
    Moving Window strategy
    Double precision
    Image size 2048x2048
@@ -83,8 +88,9 @@ Checking results against CPU:
                     0.00%  1.5800us         2     790ns     357ns  1.2230us  cudaEventDestroy
                     0.00%     609ns         2     304ns     132ns     477ns  cuDeviceGet
                     0.00%     169ns         1     169ns     169ns     169ns  cuDeviceGetUuid
+#+end_example
 *** nvvp
-HtoD: 13.849MB in 1.06193ms
+HtoD: 13.849MB in 1.06193ms,
 DtoH: 69.207MB in 5.30467ms
 Serial CPU impl - 7.11s
 [[file:default_config.nvvp][nvvp file]]
@@ -119,6 +125,7 @@ Serial CPU impl - 7.11s
 #endif
 #+end_src
 *** nvprof output
+#+begin_example
 
    Moving Window strategy
    Double precision
@@ -160,8 +167,9 @@ Error 9 on line 792 of grid_gpu.cu: invalid configuration argument
                     0.00%  1.5060us         2     753ns     341ns  1.1650us  cudaEventDestroy
                     0.00%     657ns         2     328ns     127ns     530ns  cuDeviceGet
                     0.00%     299ns         1     299ns     299ns     299ns  cudaGetErrorString                    0.00%     161ns         1     161ns     161ns     161ns  cuDeviceGetUuid
+#+end_example
 *** nvvp
-HtoD: 67.977MB in 5.1845ms
+HtoD: 67.977MB in 5.1845ms,
 DtoH: 285.217MB in 21.90682ms
 [[file:config_1.nvvp][nvvp file]]
 
@@ -196,6 +204,7 @@ DtoH: 285.217MB in 21.90682ms
 #endif
 #+end_src
 *** nvprof output
+#+begin_example
    Moving Window strategy
    Double precision
    Image size 8192x8192
@@ -236,16 +245,8 @@ Error 9 on line 792 of grid_gpu.cu: invalid configuration argument
                     0.00%  1.7570us         3     585ns     135ns  1.4160us  cuDeviceGetCount
                     0.00%     766ns         2     383ns     168ns     598ns  cuDeviceGet
                     0.00%     309ns         1     309ns     309ns     309ns  cudaGetErrorString                    0.00%     206ns         1     206ns     206ns     206ns  cuDeviceGetUuid
+#+end_example
 *** nvvp
-HtoD: 107.546MB in 8.30078ms
+HtoD: 107.546MB in 8.30078ms,
 DtoH: 1.141GB in 87.54853ms
 [[file:config_2.nvvp][nvvp file]]
-
-*** Defines.h
-#+begin_src C
-#+end_src
-*** nvprof output
-*** nvvp
-HtoD: MB in ms
-DtoH: MB in ms
-[[file:default.nvvp][nvvp file]]
