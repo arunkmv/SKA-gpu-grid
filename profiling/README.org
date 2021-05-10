@@ -1,0 +1,251 @@
+#+TITLE: Data transfer overhead and latency profiling
+
+* Experiments
+** Experiment template
+*** Defines.h
+#+begin_src C
+#+end_src
+*** nvprof output
+*** nvvp
+HtoD: MB in ms
+DtoH: MB in ms
+[[file:default.nvvp][nvvp file]]
+** Default config
+*** Defines.h
+#+begin_src C
+#ifndef __DEFINES_H
+#define __DEFINES_H
+
+#define NPOINTS 400000
+#define GCF_DIM 32
+#define IMG_SIZE 2048
+#define GCF_GRID 8
+//BLOCK_Y affects only MOVING_WINDOW
+#ifndef BLOCK_Y
+#define BLOCK_Y 4
+//#define BLOCK_Y 11
+#endif
+//PTS and GCF_STRIPES affect only GATHER
+//#define PTS 1
+//#define GCF_STRIPES 1
+//#define POLARIZATIONS 4
+#ifndef PTS
+#define PTS 1
+#endif
+#ifndef GCF_STRIPES
+#define GCF_STRIPES 8
+//#define GCF_STRIPES 4
+#endif
+#define POLARIZATIONS 1
+//#define DEBUG1
+#endif
+#+end_src
+*** nvprof output
+   Moving Window strategy
+   Double precision
+   Image size 2048x2048
+   GCF size 32x32
+   1 polarizations
+   400000 visibilities
+   Subgrid: 1/8
+
+
+
+Computing on GPU...
+==7860== NVPROF is profiling process 7860, command: ./grid
+memcpy time: 1.10803 ms.
+Processed 400000 complex points in 50.8919 ms.
+64.3875 Gflops
+Computing on CPU...
+Checking results against CPU:
+==7860== Profiling application: ./grid
+==7860== Profiling result:
+            Type  Time(%)      Time     Calls       Avg       Min       Max  Name
+ GPU activities:   88.29%  50.886ms         1  50.886ms  50.886ms  50.886ms  void grid_kernel_window<int=32, double2, double2>(double2*, int2*, double2*, unsigned long, int, double2*)
+                    9.23%  5.3222ms         1  5.3222ms  5.3222ms  5.3222ms  [CUDA memcpy DtoH]                    1.85%  1.0662ms         3  355.40us  82.299us  494.56us  [CUDA memcpy HtoD]                    0.63%  360.75us         1  360.75us  360.75us  360.75us  void vis2ints<double2>(double2*, int2*, int)
+                    0.00%  1.1840us         1  1.1840us  1.1840us  1.1840us  [CUDA memset]
+      API calls:   63.59%  123.20ms         2  61.598ms     703ns  123.20ms  cudaEventCreate
+                   26.80%  51.912ms         2  25.956ms  6.7490us  51.905ms  cudaEventSynchronize
+                    5.02%  9.7222ms         4  2.4305ms  200.34us  8.7886ms  cudaHostRegister
+                    3.32%  6.4401ms         4  1.6100ms  101.68us  5.3377ms  cudaMemcpy
+                    0.75%  1.4470ms         4  361.74us  139.65us  937.69us  cudaHostUnregister                    0.29%  570.69us         5  114.14us  89.886us  185.06us  cudaMalloc
+                    0.07%  144.02us        97  1.4840us      99ns  63.638us  cuDeviceGetAttribute
+                    0.06%  108.65us         1  108.65us  108.65us  108.65us  cudaFree
+                    0.03%  62.137us         1  62.137us  62.137us  62.137us  cuDeviceTotalMem
+                    0.02%  38.591us         1  38.591us  38.591us  38.591us  cuDeviceGetName
+                    0.02%  38.423us         2  19.211us  8.0890us  30.334us  cudaLaunchKernel
+                    0.01%  20.784us         4  5.1960us  1.4560us  14.745us  cudaEventRecord
+                    0.01%  14.450us         1  14.450us  14.450us  14.450us  cudaMemset
+                    0.00%  5.9470us         1  5.9470us  5.9470us  5.9470us  cuDeviceGetPCIBusId
+                    0.00%  2.6010us         2  1.3000us  1.1680us  1.4330us  cudaEventElapsedTime
+                    0.00%  1.8410us         3     613ns      99ns  1.5840us  cuDeviceGetCount
+                    0.00%  1.8310us         8     228ns      81ns     389ns  cudaGetLastError
+                    0.00%  1.5800us         2     790ns     357ns  1.2230us  cudaEventDestroy
+                    0.00%     609ns         2     304ns     132ns     477ns  cuDeviceGet
+                    0.00%     169ns         1     169ns     169ns     169ns  cuDeviceGetUuid
+*** nvvp
+HtoD: 13.849MB in 1.06193ms
+DtoH: 69.207MB in 5.30467ms
+Serial CPU impl - 7.11s
+[[file:default_config.nvvp][nvvp file]]
+** config 1
+*** Defines.h
+#+begin_src C
+#ifndef __DEFINES_H
+#define __DEFINES_H
+
+#define NPOINTS 1600000
+#define GCF_DIM 128
+#define IMG_SIZE 4096
+#define GCF_GRID 8
+//BLOCK_Y affects only MOVING_WINDOW
+#ifndef BLOCK_Y
+//#define BLOCK_Y 4
+#define BLOCK_Y 11
+#endif
+//PTS and GCF_STRIPES affect only GATHER
+//#define PTS 1
+//#define GCF_STRIPES 1
+//#define POLARIZATIONS 4
+#ifndef PTS
+#define PTS 1
+#endif
+#ifndef GCF_STRIPES
+#define GCF_STRIPES 8
+//#define GCF_STRIPES 4
+#endif
+#define POLARIZATIONS 1
+//#define DEBUG1
+#endif
+#+end_src
+*** nvprof output
+
+   Moving Window strategy
+   Double precision
+   Image size 4096x4096
+   GCF size 128x128
+   1 polarizations
+   1600000 visibilities
+   Subgrid: 1/8
+
+
+
+Computing on GPU...
+==16269== NVPROF is profiling process 16269, command: ../grid
+memcpy time: 5.23046 ms.
+Processed 1600000 complex points in 0.002368 ms.
+8.85622e+07 Gflops
+Error 9 on line 792 of grid_gpu.cu: invalid configuration argument
+==16269== Generated result file: /home/arunkmv/Projects/gpu-gridding-benchmark/SKA-gpu-grid/profiling/config_1
+======== Profiling result:
+            Type  Time(%)      Time     Calls       Avg       Min       Max  Name
+ GPU activities:   76.79%  21.907ms         1  21.907ms  21.907ms  21.907ms  [CUDA memcpy DtoH]                   18.17%  5.1845ms         3  1.7282ms  1.2812ms  1.9521ms  [CUDA memcpy HtoD]                    5.03%  1.4342ms         1  1.4342ms  1.4342ms  1.4342ms  void vis2ints<double2>(double2*, int2*, int)
+                    0.00%  1.1840us         1  1.1840us  1.1840us  1.1840us  [CUDA memset]
+      API calls:   62.37%  126.34ms         2  63.169ms     717ns  126.34ms  cudaEventCreate
+                   18.98%  38.442ms         4  9.6105ms  967.46us  35.076ms  cudaHostRegister
+                   13.40%  27.145ms         4  6.7863ms  1.3023ms  21.921ms  cudaMemcpy
+                    2.50%  5.0600ms         4  1.2650ms  455.11us  3.5953ms  cudaHostUnregister                    2.09%  4.2338ms         2  2.1169ms  5.9300us  4.2279ms  cudaEventSynchronize
+                    0.38%  762.90us         5  152.58us  107.59us  299.40us  cudaMalloc
+                    0.12%  245.98us         1  245.98us  245.98us  245.98us  cudaFree
+                    0.07%  146.26us        97  1.5070us     103ns  64.182us  cuDeviceGetAttribute
+                    0.04%  86.217us         1  86.217us  86.217us  86.217us  cuDeviceTotalMem
+                    0.02%  38.276us         1  38.276us  38.276us  38.276us  cuDeviceGetName
+                    0.01%  26.416us         2  13.208us     212ns  26.204us  cudaLaunchKernel
+                    0.01%  14.141us         4  3.5350us     953ns  9.1330us  cudaEventRecord
+                    0.01%  12.013us         1  12.013us  12.013us  12.013us  cudaMemset
+                    0.00%  6.3190us         1  6.3190us  6.3190us  6.3190us  cuDeviceGetPCIBusId
+                    0.00%  2.2000us         2  1.1000us  1.0480us  1.1520us  cudaEventElapsedTime
+                    0.00%  1.6170us         8     202ns      99ns     350ns  cudaGetLastError
+                    0.00%  1.5110us         3     503ns     105ns  1.2550us  cuDeviceGetCount
+                    0.00%  1.5060us         2     753ns     341ns  1.1650us  cudaEventDestroy
+                    0.00%     657ns         2     328ns     127ns     530ns  cuDeviceGet
+                    0.00%     299ns         1     299ns     299ns     299ns  cudaGetErrorString                    0.00%     161ns         1     161ns     161ns     161ns  cuDeviceGetUuid
+*** nvvp
+HtoD: 67.977MB in 5.1845ms
+DtoH: 285.217MB in 21.90682ms
+[[file:config_1.nvvp][nvvp file]]
+
+** config 2
+*** Defines.h
+#+begin_src C
+#ifndef __DEFINES_H
+#define __DEFINES_H
+
+#define NPOINTS 1280000
+#define GCF_DIM 255
+#define IMG_SIZE 8192
+#define GCF_GRID 8
+//BLOCK_Y affects only MOVING_WINDOW
+#ifndef BLOCK_Y
+//#define BLOCK_Y 4
+#define BLOCK_Y 11
+#endif
+//PTS and GCF_STRIPES affect only GATHER
+//#define PTS 1
+//#define GCF_STRIPES 1
+//#define POLARIZATIONS 4
+#ifndef PTS
+#define PTS 1
+#endif
+#ifndef GCF_STRIPES
+#define GCF_STRIPES 8
+//#define GCF_STRIPES 4
+#endif
+#define POLARIZATIONS 1
+//#define DEBUG1
+#endif
+#+end_src
+*** nvprof output
+   Moving Window strategy
+   Double precision
+   Image size 8192x8192
+   GCF size 255x255
+   1 polarizations
+   1280000 visibilities
+   Subgrid: 1/8
+
+
+
+Computing on GPU...
+==18090== NVPROF is profiling process 18090, command: ../grid
+memcpy time: 8.34803 ms.
+Processed 1280000 complex points in 0.0024 ms.
+2.7744e+08 Gflops
+Error 9 on line 792 of grid_gpu.cu: invalid configuration argument
+==18090== Generated result file: /home/arunkmv/Projects/gpu-gridding-benchmark/SKA-gpu-grid/profiling/config_2.nvvp
+======== Profiling result:
+            Type  Time(%)      Time     Calls       Avg       Min       Max  Name
+ GPU activities:   90.26%  87.549ms         1  87.549ms  87.549ms  87.549ms  [CUDA memcpy DtoH]                    8.56%  8.3008ms         3  2.7669ms  1.5577ms  5.1643ms  [CUDA memcpy HtoD]                    1.19%  1.1497ms         1  1.1497ms  1.1497ms  1.1497ms  void vis2ints<double2>(double2*, int2*, int)
+                    0.00%  1.2160us         1  1.2160us  1.2160us  1.2160us  [CUDA memset]
+      API calls:   36.11%  150.66ms         4  37.665ms  862.16us  146.07ms  cudaHostRegister
+                   32.96%  137.51ms         2  68.757ms     620ns  137.51ms  cudaEventCreate
+                   22.99%  95.906ms         4  23.977ms  1.5683ms  87.564ms  cudaMemcpy
+                    4.37%  18.246ms         4  4.5615ms  443.52us  15.457ms  cudaHostUnregister                    2.96%  12.357ms         2  6.1783ms  6.3320us  12.350ms  cudaEventSynchronize
+                    0.31%  1.3043ms         5  260.86us  100.76us  832.62us  cudaMalloc
+                    0.20%  848.24us         1  848.24us  848.24us  848.24us  cudaFree
+                    0.04%  170.44us        97  1.7570us     124ns  74.564us  cuDeviceGetAttribute
+                    0.03%  109.27us         1  109.27us  109.27us  109.27us  cuDeviceTotalMem
+                    0.01%  41.273us         1  41.273us  41.273us  41.273us  cuDeviceGetName
+                    0.01%  27.597us         2  13.798us     202ns  27.395us  cudaLaunchKernel
+                    0.00%  19.610us         4  4.9020us  1.0600us  14.912us  cudaEventRecord
+                    0.00%  10.037us         1  10.037us  10.037us  10.037us  cudaMemset
+                    0.00%  8.2440us         1  8.2440us  8.2440us  8.2440us  cuDeviceGetPCIBusId
+                    0.00%  2.3690us         2  1.1840us  1.1240us  1.2450us  cudaEventElapsedTime
+                    0.00%  1.9230us         8     240ns     101ns     460ns  cudaGetLastError
+                    0.00%  1.8280us         2     914ns     376ns  1.4520us  cudaEventDestroy
+                    0.00%  1.7570us         3     585ns     135ns  1.4160us  cuDeviceGetCount
+                    0.00%     766ns         2     383ns     168ns     598ns  cuDeviceGet
+                    0.00%     309ns         1     309ns     309ns     309ns  cudaGetErrorString                    0.00%     206ns         1     206ns     206ns     206ns  cuDeviceGetUuid
+*** nvvp
+HtoD: 107.546MB in 8.30078ms
+DtoH: 1.141GB in 87.54853ms
+[[file:config_2.nvvp][nvvp file]]
+
+*** Defines.h
+#+begin_src C
+#+end_src
+*** nvprof output
+*** nvvp
+HtoD: MB in ms
+DtoH: MB in ms
+[[file:default.nvvp][nvvp file]]
