@@ -483,9 +483,18 @@ int main(int argc, char** argv) {
    std::cout << "Computing on CPU..." << std::endl;
    OUTPRECISION2 *out_cpu=(OUTPRECISION2*)malloc(sizeof(OUTPRECISION2)*(IMG_SIZE*IMG_SIZE+2*IMG_SIZE*GCF_DIM+2*GCF_DIM)*POLARIZATIONS);
    memset(out_cpu, 0, sizeof(OUTPRECISION2)*(IMG_SIZE*IMG_SIZE+2*IMG_SIZE*GCF_DIM+2*GCF_DIM)*POLARIZATIONS);
-   
+
+   clock_t start_cpu, end_cpu;
+   double cpu_time_used;
+   start_cpu = clock();
+
    gridCPU_pz(out_cpu+IMG_SIZE*GCF_DIM+GCF_DIM,in,in_vals,npts,IMG_SIZE,gcf,GCF_DIM);
    //gridCPU(out+IMG_SIZE*GCF_DIM+GCF_DIM,in,in_vals,npts,IMG_SIZE,gcf,GCF_DIM);
+
+   end_cpu = clock();
+   cpu_time_used = ((double) (end_cpu - start_cpu) * 1000) / CLOCKS_PER_SEC;
+
+   std::cout << "CPU execution time: " << cpu_time_used << " ms." << std::endl;
 #endif
 
 

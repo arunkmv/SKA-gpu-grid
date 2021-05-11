@@ -94,8 +94,8 @@ Serial CPU impl - 7.11s
 #define GCF_GRID 8
 //BLOCK_Y affects only MOVING_WINDOW
 #ifndef BLOCK_Y
-//#define BLOCK_Y 4
-#define BLOCK_Y 11
+#define BLOCK_Y 8
+//#define BLOCK_Y 11
 #endif
 //PTS and GCF_STRIPES affect only GATHER
 //#define PTS 1
@@ -114,7 +114,6 @@ Serial CPU impl - 7.11s
 #+end_src
 *** nvprof output
 #+begin_example
-
    Moving Window strategy
    Double precision
    Image size 4096x4096
@@ -126,43 +125,42 @@ Serial CPU impl - 7.11s
 
 
 Computing on GPU...
-==16269== NVPROF is profiling process 16269, command: ../grid
-memcpy time: 5.23046 ms.
-Processed 1600000 complex points in 0.002368 ms.
-8.85622e+07 Gflops
-Error 9 on line 792 of grid_gpu.cu: invalid configuration argument
-==16269== Generated result file: /home/arunkmv/Projects/gpu-gridding-benchmark/SKA-gpu-grid/profiling/config_1
+==16419== NVPROF is profiling process 16419, command: ../grid
+memcpy time: 5.23344 ms.
+Processed 1600000 complex points in 25409.9 ms.
+8.25327 Gflops
+==16419== Generated result file: /home/arunkmv/Projects/gpu-gridding-benchmark/SKA-gpu-grid/profiling/config_1_8.nvvp
 ======== Profiling result:
             Type  Time(%)      Time     Calls       Avg       Min       Max  Name
- GPU activities:   76.79%  21.907ms         1  21.907ms  21.907ms  21.907ms  [CUDA memcpy DtoH]
-                   18.17%  5.1845ms         3  1.7282ms  1.2812ms  1.9521ms  [CUDA memcpy HtoD]
-                    5.03%  1.4342ms         1  1.4342ms  1.4342ms  1.4342ms  void vis2ints<double2>(double2*, int2*, int)
+ GPU activities:   99.64%  25.4102s         1  25.4102s  25.4102s  25.4102s  void grid_kernel_window<int=128, double2, double2>(double2*, int2*, double2*, unsigned long, int, double2*)
+                    0.34%  85.473ms         1  85.473ms  85.473ms  85.473ms  [CUDA memcpy DtoH]
+                    0.02%  5.1852ms         3  1.7284ms  1.2800ms  1.9529ms  [CUDA memcpy HtoD]
+                    0.01%  1.4355ms         1  1.4355ms  1.4355ms  1.4355ms  void vis2ints<double2>(double2*, int2*, int)
                     0.00%  1.1840us         1  1.1840us  1.1840us  1.1840us  [CUDA memset]
-      API calls:   62.37%  126.34ms         2  63.169ms     717ns  126.34ms  cudaEventCreate
-                   18.98%  38.442ms         4  9.6105ms  967.46us  35.076ms  cudaHostRegister
-                   13.40%  27.145ms         4  6.7863ms  1.3023ms  21.921ms  cudaMemcpy
-                    2.50%  5.0600ms         4  1.2650ms  455.11us  3.5953ms  cudaHostUnregister
-                    2.09%  4.2338ms         2  2.1169ms  5.9300us  4.2279ms  cudaEventSynchronize
-                    0.38%  762.90us         5  152.58us  107.59us  299.40us  cudaMalloc
-                    0.12%  245.98us         1  245.98us  245.98us  245.98us  cudaFree
-                    0.07%  146.26us        97  1.5070us     103ns  64.182us  cuDeviceGetAttribute
-                    0.04%  86.217us         1  86.217us  86.217us  86.217us  cuDeviceTotalMem
-                    0.02%  38.276us         1  38.276us  38.276us  38.276us  cuDeviceGetName
-                    0.01%  26.416us         2  13.208us     212ns  26.204us  cudaLaunchKernel
-                    0.01%  14.141us         4  3.5350us     953ns  9.1330us  cudaEventRecord
-                    0.01%  12.013us         1  12.013us  12.013us  12.013us  cudaMemset
-                    0.00%  6.3190us         1  6.3190us  6.3190us  6.3190us  cuDeviceGetPCIBusId
-                    0.00%  2.2000us         2  1.1000us  1.0480us  1.1520us  cudaEventElapsedTime
-                    0.00%  1.6170us         8     202ns      99ns     350ns  cudaGetLastError
-                    0.00%  1.5110us         3     503ns     105ns  1.2550us  cuDeviceGetCount
-                    0.00%  1.5060us         2     753ns     341ns  1.1650us  cudaEventDestroy
-                    0.00%     657ns         2     328ns     127ns     530ns  cuDeviceGet
-                    0.00%     299ns         1     299ns     299ns     299ns  cudaGetErrorString
-                    0.00%     161ns         1     161ns     161ns     161ns  cuDeviceGetUuid
+      API calls:   98.97%  25.4145s         2  12.7072s  6.1870us  25.4145s  cudaEventSynchronize
+                    0.50%  127.33ms         2  63.667ms     613ns  127.33ms  cudaEventCreate
+                    0.35%  90.772ms         4  22.693ms  1.3037ms  85.545ms  cudaMemcpy
+                    0.15%  38.483ms         4  9.6209ms  947.23us  34.828ms  cudaHostRegister
+                    0.02%  5.8640ms         4  1.4660ms  504.35us  3.8336ms  cudaHostUnregister
+                    0.00%  707.38us         5  141.48us  102.39us  289.30us  cudaMalloc
+                    0.00%  251.03us         1  251.03us  251.03us  251.03us  cudaFree
+                    0.00%  153.10us        97  1.5780us     108ns  67.907us  cuDeviceGetAttribute
+                    0.00%  101.87us         1  101.87us  101.87us  101.87us  cuDeviceTotalMem
+                    0.00%  36.733us         1  36.733us  36.733us  36.733us  cuDeviceGetName
+                    0.00%  31.545us         2  15.772us  5.1320us  26.413us  cudaLaunchKernel
+                    0.00%  19.185us         4  4.7960us  1.3490us  14.205us  cudaEventRecord
+                    0.00%  12.504us         1  12.504us  12.504us  12.504us  cudaMemset
+                    0.00%  11.973us         2  5.9860us  1.0700us  10.903us  cudaEventElapsedTime
+                    0.00%  5.7840us         1  5.7840us  5.7840us  5.7840us  cuDeviceGetPCIBusId
+                    0.00%  3.7330us         8     466ns     152ns  1.5730us  cudaGetLastError
+                    0.00%  1.6460us         2     823ns     335ns  1.3110us  cudaEventDestroy
+                    0.00%  1.4090us         3     469ns      97ns  1.1280us  cuDeviceGetCount
+                    0.00%     637ns         2     318ns     141ns     496ns  cuDeviceGet
+                    0.00%     174ns         1     174ns     174ns     174ns  cuDeviceGetUuid
 #+end_example
 *** nvvp
-HtoD: 67.977MB in 5.1845ms,
-DtoH: 285.217MB in 21.90682ms
+HtoD: 67.977MB in 5.18524ms,
+DtoH: 285.217MB in 85.47307ms
 [[file:config_1.nvvp][nvvp file]]
 
 ** config 2
@@ -410,6 +408,93 @@ Error 9 on line 792 of grid_gpu.cu: invalid configuration argument
 HtoD: 394.266MB in 30.16069ms,
 DtoH: 1.142GB in 87.84809ms
 [[file:config_4.nvvp][nvvp file]]
+** config 5
+*** Defines.h
+#+begin_src C
+#ifndef __DEFINES_H
+#define __DEFINES_H
+
+#define NPOINTS 800000
+#define GCF_DIM 128
+#define IMG_SIZE 3072
+#define GCF_GRID 8
+//BLOCK_Y affects only MOVING_WINDOW
+#ifndef BLOCK_Y
+#define BLOCK_Y 8
+//#define BLOCK_Y 11
+#endif
+//PTS and GCF_STRIPES affect only GATHER
+//#define PTS 1
+//#define GCF_STRIPES 1
+//#define POLARIZATIONS 4
+#ifndef PTS
+#define PTS 1
+#endif
+#ifndef GCF_STRIPES
+#define GCF_STRIPES 8
+//#define GCF_STRIPES 4
+#endif
+#define POLARIZATIONS 1
+//#define DEBUG1
+#endif
+#+end_src
+*** nvprof output
+#+begin_example
+   Moving Window strategy
+   Double precision
+   Image size 3072x3072
+   GCF size 128x128
+   1 polarizations
+   800000 visibilities
+   Subgrid: 1/8
+
+
+
+Computing on GPU...
+==41222== NVPROF is profiling process 41222, command: ../grid
+memcpy time: 3.30317 ms.
+Dg: 25000, 16
+Db 128, 8
+Processed 800000 complex points in 3474.65 ms.
+30.1779 Gflops
+Computing on CPU...
+CPU execution time: 246915 ms.
+Checking results against CPU:
+==41222== Generated result file: /home/arunkmv/Projects/gpu-gridding-benchmark/SKA-gpu-grid/profiling/config_5.nvvp
+======== Profiling result:
+            Type  Time(%)      Time     Calls       Avg       Min       Max  Name
+ GPU activities:   99.53%  3.47475s         1  3.47475s  3.47475s  3.47475s  void grid_kernel_window<int=128, double2, double2>(double2*, int2*, double2*, unsigned long, int, double2*)
+                    0.36%  12.564ms         1  12.564ms  12.564ms  12.564ms  [CUDA memcpy DtoH]
+                    0.09%  3.2569ms         3  1.0856ms  978.17us  1.2765ms  [CUDA memcpy HtoD]
+                    0.02%  720.05us         1  720.05us  720.05us  720.05us  void vis2ints<double2>(double2*, int2*, int)
+                    0.00%  1.1840us         1  1.1840us  1.1840us  1.1840us  [CUDA memset]
+      API calls:   95.74%  3.47704s         2  1.73852s  6.2280us  3.47704s  cudaEventSynchronize
+                    3.11%  112.86ms         2  56.429ms     625ns  112.86ms  cudaEventCreate
+                    0.59%  21.533ms         4  5.3834ms  560.80us  19.725ms  cudaHostRegister
+                    0.44%  15.886ms         4  3.9714ms  988.13us  12.589ms  cudaMemcpy
+                    0.08%  3.0072ms         4  751.81us  270.29us  2.0913ms  cudaHostUnregister
+                    0.02%  656.18us         5  131.24us  94.938us  221.04us  cudaMalloc
+                    0.01%  187.03us         1  187.03us  187.03us  187.03us  cudaFree
+                    0.00%  164.84us        97  1.6990us     109ns  70.845us  cuDeviceGetAttribute
+                    0.00%  93.248us         1  93.248us  93.248us  93.248us  cuDeviceTotalMem
+                    0.00%  38.427us         4  9.6060us  1.2770us  21.130us  cudaEventRecord
+                    0.00%  38.311us         1  38.311us  38.311us  38.311us  cuDeviceGetName
+                    0.00%  36.238us         2  18.119us  6.4600us  29.778us  cudaLaunchKernel
+                    0.00%  11.726us         1  11.726us  11.726us  11.726us  cudaMemset
+                    0.00%  5.2270us         1  5.2270us  5.2270us  5.2270us  cuDeviceGetPCIBusId
+                    0.00%  4.5660us         2  2.2830us  1.1420us  3.4240us  cudaEventElapsedTime
+                    0.00%  2.0370us         8     254ns      82ns     481ns  cudaGetLastError
+                    0.00%  1.9390us         3     646ns     107ns  1.2240us  cuDeviceGetCount
+                    0.00%  1.4930us         2     746ns     327ns  1.1660us  cudaEventDestroy
+                    0.00%     704ns         2     352ns     189ns     515ns  cuDeviceGet
+                    0.00%     189ns         1     189ns     189ns     189ns  cuDeviceGetUuid
+
+#+end_example
+*** nvvp
+HtoD: MB in ms,
+DtoH: MB in ms
+[[file:default.nvvp][nvvp file]]
+
 ** Experiment template
 *** Defines.h
 #+begin_src C
@@ -425,28 +510,72 @@ DtoH: MB in ms
 
 * CPU Experiments
 ** Default config
-*** Defines.h
-#+begin_src C
-#+end_src
 *** Console output
 #+begin_example
+   Moving Window strategy
+   Double precision
+   Image size 2048x2048
+   GCF size 32x32
+   1 polarizations
+   400000 visibilities
+   Subgrid: 1/8
+
+
+
+Computing on GPU...
+memcpy time: 1.09232 ms.
+Dg: 12500, 3
+Db 32, 11
+Processed 400000 complex points in 59.2173 ms.
+55.3352 Gflops
+Computing on CPU...
+CPU execution time: 7305.15 ms.
+Checking results against CPU:
 
 #+end_example
-*** nvvp
-HtoD: MB
-DtoH: MB
-
-** Experiment template
-*** Defines.h
-#+begin_src C
-#+end_src
+** config 1
 *** Console output
 #+begin_example
+   Moving Window strategy
+   Double precision
+   Image size 4096x4096
+   GCF size 128x128
+   1 polarizations
+   1600000 visibilities
+   Subgrid: 1/8
+
+
+
+Computing on GPU...
+memcpy time: 5.23126 ms.
+Processed 1600000 complex points in 5960.49 ms.
+35.1842 Gflops
+Computing on CPU...
+CPU execution time: 504638 ms.
+Checking results against CPU:
 
 #+end_example
-*** nvvp
-HtoD: MB
-DtoH: MB
+** config 5
+*** Console output
+#+begin_example
+   Moving Window strategy
+   Double precision
+   Image size 3072x3072
+   GCF size 128x128
+   1 polarizations
+   800000 visibilities
+   Subgrid: 1/8
+
+
+
+Computing on GPU...
+memcpy time: 3.27789 ms.
+Processed 800000 complex points in 2485.45 ms.
+42.1885 Gflops
+Computing on CPU...
+CPU execution time: 233219 ms.
+Checking results against CPU:
+#+end_example
 
 
 * Results
@@ -457,10 +586,10 @@ CUDA event time includes both CPU overhead as well as PCIe transfer latency, whi
 | Experiment     | Data sent (MB) | CUDA event time (ms) (L + o) | Profiler time (ms) (L) |    overhead (o) (ms) | Latency / Byte (ps/B) | PCIe throughput (GB/s) |
 |----------------+----------------+------------------------------+------------------------+----------------------+-----------------------+------------------------|
 | Default config |         13.849 |                      1.10787 |                1.06346 |  0.04440999999999984 |     76.78965990324211 |     13.022586651119928 |
-| config 1       |         67.997 |                      5.23046 |                 5.1845 |              0.04596 |        76.24601085342 |     13.115440254605073 |
+| config 1       |         67.997 |                      5.23344 |                5.18524 | 0.048199999999999577 |     76.25689368648618 |     13.113568513704283 |
 | config 2       |        107.546 |                      8.34803 |                8.30078 | 0.047250000000000014 |     77.18353076822939 |     12.956131833393972 |
 | config 3       |        230.426 |                      17.6256 |               17.57831 | 0.047290000000000276 |     76.28613958494266 |      13.10854115099802 |
 | config 4       |        394.266 |                      30.2112 |               30.16069 |  0.05051000000000272 |     76.49832853961539 |     13.072181040950987 |
 |----------------+----------------+------------------------------+------------------------+----------------------+-----------------------+------------------------|
-| Mean           |                |                              |                        |             0.047084 |             76.600734 |              13.054976 |
+| Mean           |                |                              |                        |             0.047532 |             76.602910 |              13.054602 |
 #+TBLFM: $5='(- $3 $4);N::$6='(/ (* $4 1000) $2);N::$7='(/ $2 $4);N::@7$5=vmean(@2$5..@6$5)::@7$6=vmean(@2$6..@6$6)::@7$7=vmean(@2$7..@6$7)

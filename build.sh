@@ -1,4 +1,8 @@
-#!/usr/bin/sh
+#!/bin/bash
+
+make clean
+
+cp Defines/${1-default}.h Defines.h
 
 make \
 ARCH=sm_75 \
