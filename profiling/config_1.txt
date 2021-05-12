@@ -1,0 +1,47 @@
+*** GPU Gridding ***
+   Moving Window strategy
+   Double precision
+   Image size 2048x2048
+   GCF size 64x64
+   1 polarizations
+   800000 visibilities
+   Subgrid: 1/8
+
+
+
+Computing on GPU...
+==6108== NVPROF is profiling process 6108, command: ../grid
+memcpy time: 2.32048 ms.
+Processed 800000 complex points in 453.022 ms.
+57.8656 Gflops
+Computing on CPU...
+CPU execution time: 52147.5 ms.
+Checking results against CPU:
+==6108== Generated result file: /home/arunkmv/Projects/gpu-gridding-benchmark/SKA-gpu-grid/profiling/config_1.nvvp
+======== Profiling result:
+            Type  Time(%)      Time     Calls       Avg       Min       Max  Name
+ GPU activities:   98.17%  453.03ms         1  453.03ms  453.03ms  453.03ms  void grid_kernel_window<int=64, double2, double2>(double2*, int2*, double2*, unsigned long, int, double2*)
+                    1.18%  5.4570ms         1  5.4570ms  5.4570ms  5.4570ms  [CUDA memcpy DtoH]
+                    0.49%  2.2745ms         3  758.16us  322.50us  976.12us  [CUDA memcpy HtoD]
+                    0.16%  718.77us         1  718.77us  718.77us  718.77us  void vis2ints<double2>(double2*, int2*, int)
+                    0.00%  1.1840us         1  1.1840us  1.1840us  1.1840us  [CUDA memset]
+      API calls:   76.42%  454.34ms         2  227.17ms  6.1290us  454.34ms  cudaEventSynchronize
+                   19.98%  118.77ms         2  59.386ms     716ns  118.77ms  cudaEventCreate
+                    1.83%  10.869ms         4  2.7174ms  488.03us  9.1089ms  cudaHostRegister
+                    1.31%  7.7859ms         4  1.9465ms  344.06us  5.4720ms  cudaMemcpy
+                    0.28%  1.6614ms         4  415.36us  186.07us  944.25us  cudaHostUnregister
+                    0.10%  571.54us         5  114.31us  86.487us  170.17us  cudaMalloc
+                    0.03%  186.84us        97  1.9260us     124ns  81.903us  cuDeviceGetAttribute
+                    0.02%  111.61us         1  111.61us  111.61us  111.61us  cuDeviceTotalMem
+                    0.02%  108.37us         1  108.37us  108.37us  108.37us  cudaFree
+                    0.01%  40.336us         1  40.336us  40.336us  40.336us  cuDeviceGetName
+                    0.01%  36.114us         2  18.057us  7.5010us  28.613us  cudaLaunchKernel
+                    0.00%  20.045us         4  5.0110us  1.6540us  13.827us  cudaEventRecord
+                    0.00%  13.738us         1  13.738us  13.738us  13.738us  cudaMemset
+                    0.00%  5.2500us         1  5.2500us  5.2500us  5.2500us  cuDeviceGetPCIBusId
+                    0.00%  2.3930us         2  1.1960us  1.1320us  1.2610us  cudaEventElapsedTime
+                    0.00%  2.0710us         3     690ns     133ns  1.3870us  cuDeviceGetCount
+                    0.00%  1.8100us         8     226ns     121ns     361ns  cudaGetLastError
+                    0.00%  1.5130us         2     756ns     330ns  1.1830us  cudaEventDestroy
+                    0.00%     800ns         2     400ns     188ns     612ns  cuDeviceGet
+                    0.00%     225ns         1     225ns     225ns     225ns  cuDeviceGetUuid

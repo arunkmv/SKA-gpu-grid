@@ -2,8 +2,8 @@
 #define __DEFINES_H
 
 #define NPOINTS 800000
-#define GCF_DIM 128
-#define IMG_SIZE 3072
+#define GCF_DIM 64
+#define IMG_SIZE 2048
 #define GCF_GRID 8
 //BLOCK_Y affects only MOVING_WINDOW
 #ifndef BLOCK_Y

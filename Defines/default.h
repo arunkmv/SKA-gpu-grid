@@ -54,14 +54,14 @@ Copyright (c) 2016, NVIDIA CORPORATION. All rights reserved.
 #ifndef __DEFINES_H
 #define __DEFINES_H
 
-#define NPOINTS 800000
-#define GCF_DIM 128
-#define IMG_SIZE 3072
+#define NPOINTS 400000
+#define GCF_DIM 32
+#define IMG_SIZE 2048
 #define GCF_GRID 8
 //BLOCK_Y affects only MOVING_WINDOW
 #ifndef BLOCK_Y
-#define BLOCK_Y 8
-//#define BLOCK_Y 11
+//#define BLOCK_Y 4
+#define BLOCK_Y 11
 #endif
 //PTS and GCF_STRIPES affect only GATHER
 //#define PTS 1
