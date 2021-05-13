@@ -368,3 +368,10 @@ CUDA event time includes both CPU overhead as well as PCIe transfer latency, whi
 Power regression analysis: $t = 6.927*g^{2.7251}$
 
 $\beta = 2.7251$
+
+** Unified LogCA parameters
+
+| Parameter |     Value | Unit |
+|-----------+-----------+------|
+| Latency   | 76.416755 | ps/B |
+| Overhead  |           |      |

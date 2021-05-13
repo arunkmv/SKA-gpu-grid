@@ -1,0 +1,17 @@
+*** GPU Gridding ***
+   Moving Window strategy
+   Double precision
+   Image size 8196x8196
+   GCF size 128x128
+   1 polarizations
+   10240000 visibilities
+   Subgrid: 1/8
+
+
+
+Computing on GPU...
+==14636== NVPROF is profiling process 14636, command: ../grid
+memcpy time: 26.327 ms.
+Processed 10240000 complex points in 27264.2 ms.
+49.2286 Gflops
+Computing on CPU...

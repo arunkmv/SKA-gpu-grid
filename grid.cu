@@ -29,6 +29,7 @@ Copyright (c) 2016, NVIDIA CORPORATION. All rights reserved.
 #include <iostream>
 #include "math.h"
 #include "stdlib.h"
+#include <iomanip>
 
 #include "grid_gpu.cuh"
 #include "Defines.h"
@@ -484,17 +485,18 @@ int main(int argc, char** argv) {
    OUTPRECISION2 *out_cpu=(OUTPRECISION2*)malloc(sizeof(OUTPRECISION2)*(IMG_SIZE*IMG_SIZE+2*IMG_SIZE*GCF_DIM+2*GCF_DIM)*POLARIZATIONS);
    memset(out_cpu, 0, sizeof(OUTPRECISION2)*(IMG_SIZE*IMG_SIZE+2*IMG_SIZE*GCF_DIM+2*GCF_DIM)*POLARIZATIONS);
 
-   clock_t start_cpu, end_cpu;
-   double cpu_time_used;
-   start_cpu = clock();
+   struct timespec begin_cpu, end_cpu;
+   clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &begin_cpu);
 
    gridCPU_pz(out_cpu+IMG_SIZE*GCF_DIM+GCF_DIM,in,in_vals,npts,IMG_SIZE,gcf,GCF_DIM);
    //gridCPU(out+IMG_SIZE*GCF_DIM+GCF_DIM,in,in_vals,npts,IMG_SIZE,gcf,GCF_DIM);
 
-   end_cpu = clock();
-   cpu_time_used = ((double) (end_cpu - start_cpu) * 1000) / CLOCKS_PER_SEC;
+   clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_cpu);
+   long seconds = end_cpu.tv_sec - begin_cpu.tv_sec;
+   long nanoseconds = end_cpu.tv_nsec - begin_cpu.tv_nsec;
+   double elapsed = seconds + nanoseconds*1e-9;
 
-   std::cout << "CPU execution time: " << cpu_time_used << " ms." << std::endl;
+   std::cout << "CPU execution time: " << std::setprecision(10) << elapsed << " s." << std::endl;
 #endif
 
 
