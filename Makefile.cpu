@@ -1,0 +1,17 @@
+PRECISION ?= double
+OUTPRECISION ?= double
+ifeq ($(GATHER),1)
+	CFLAGS += -D__GATHER
+endif
+ifeq ($(MOVING_WINDOW),1)
+	CFLAGS += -D__MOVING_WINDOW
+endif
+CFLAGS += $(USERFLAGS)
+
+default: grid_cpu
+
+clean:
+	rm grid_cpu
+
+grid_cpu: grid_cpu.cpp Defines.h
+	g++ -DPRECISION=${PRECISION} -DOUTPRECISION=${OUTPRECISION} $(CFLAGS) -o grid_cpu grid_cpu.cpp
