@@ -54,7 +54,9 @@ Copyright (c) 2016, NVIDIA CORPORATION. All rights reserved.
 #ifndef __DEFINES_H
 #define __DEFINES_H
 
-#define NPOINTS 400000
+#ifndef NPOINTS
+#define NPOINTS 1600000
+#endif
 #define GCF_DIM 32
 #define IMG_SIZE 2048
 #define GCF_GRID 8

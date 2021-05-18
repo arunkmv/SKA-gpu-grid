@@ -184,6 +184,12 @@ int comp_grid (const void* A, const void* B) {
 
 int main(int argc, char** argv) {
 
+   int data_to_be_processed = sizeof(PRECISION2)*(NPOINTS*(1 + POLARIZATIONS) + 64*GCF_DIM*GCF_DIM);
+   if(argc == 2 && !strcmp(argv[1], "-d")) {
+       std::cout << data_to_be_processed;
+       return 0;
+   }
+
    OUTPRECISION2* out = (OUTPRECISION2*) malloc(sizeof(OUTPRECISION2)*(IMG_SIZE*IMG_SIZE+2*IMG_SIZE*GCF_DIM+2*GCF_DIM)*POLARIZATIONS);
    PRECISION2* in = (PRECISION2*) malloc(sizeof(PRECISION2)*NPOINTS);
    PRECISION2* in_vals = (PRECISION2*) malloc(sizeof(PRECISION2)*NPOINTS*POLARIZATIONS);
@@ -192,27 +198,27 @@ int main(int argc, char** argv) {
 
    int npts=NPOINTS;
 
-   printf("*** CPU Gridding ***\n");
-#ifdef __GATHER
-   printf("   Gather strategy\n");
-#else
-   #ifdef __MOVING_WINDOW
-      printf("   Moving Window strategy\n");
-   #else
-      printf("   Simple scatter strategy\n");
-   #endif
-#endif
+//    printf("*** CPU Gridding ***\n");
+// #ifdef __GATHER
+//    printf("   Gather strategy\n");
+// #else
+//    #ifdef __MOVING_WINDOW
+//       printf("   Moving Window strategy\n");
+//    #else
+//       printf("   Simple scatter strategy\n");
+//    #endif
+// #endif
 
-#if PRECISION==double
-   printf("   Double precision\n");
-#else
-   printf("   Single precision\n");
-#endif
-   printf("   Image size %dx%d\n", IMG_SIZE, IMG_SIZE);
-   printf("   GCF size %dx%d\n", GCF_DIM, GCF_DIM);
-   printf("   %d polarizations\n", POLARIZATIONS);
-   printf("   %d visibilities\n", npts);
-   printf("   Subgrid: 1/%d\n", GCF_GRID);
+// #if PRECISION==double
+//    printf("   Double precision\n");
+// #else
+//    printf("   Single precision\n");
+// #endif
+//    printf("   Image size %dx%d\n", IMG_SIZE, IMG_SIZE);
+//    printf("   GCF size %dx%d\n", GCF_DIM, GCF_DIM);
+//    printf("   %d polarizations\n", POLARIZATIONS);
+//    printf("   %d visibilities\n", npts);
+//    printf("   Subgrid: 1/%d\n", GCF_GRID);
 
 
    init_gcf(gcf, GCF_DIM);
@@ -245,7 +251,7 @@ int main(int argc, char** argv) {
 #endif
 #endif
 
-   std::cout << "Computing on CPU..." << std::endl;
+   // std::cout << "Computing on CPU..." << std::endl;
    OUTPRECISION2 *out_cpu=(OUTPRECISION2*)malloc(sizeof(OUTPRECISION2)*(IMG_SIZE*IMG_SIZE+2*IMG_SIZE*GCF_DIM+2*GCF_DIM)*POLARIZATIONS);
    memset(out_cpu, 0, sizeof(OUTPRECISION2)*(IMG_SIZE*IMG_SIZE+2*IMG_SIZE*GCF_DIM+2*GCF_DIM)*POLARIZATIONS);
 
@@ -260,7 +266,7 @@ int main(int argc, char** argv) {
    long nanoseconds = end_cpu.tv_nsec - begin_cpu.tv_nsec;
    double elapsed = seconds + nanoseconds*1e-9;
 
-   std::cout << "CPU execution time: " << std::setprecision(10) << elapsed << " s." << std::endl;
+   std::cout << " " << std::setprecision(10) << elapsed;
 
    free(out);out=NULL;
    free(in);in=NULL;
