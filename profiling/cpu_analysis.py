@@ -22,7 +22,7 @@ def read_prof_output(filename):
         times.append(avg_exe_time)
 
     prof_file.close()
-    return np.array(grans), np.array(times)
+    return np.array(grans).astype(np.float64), np.array(times).astype(np.float64)
 
 def power_law(x, a, b):
     return a*np.power(x, b)
