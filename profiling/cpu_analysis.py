@@ -11,17 +11,16 @@ def read_prof_file(filename):
     times = []
 
     for line in file:
-        vals = line[:-1].split()
-        num_times = len(vals) - 1
-
-        granularity = vals[0]
-        exe_time = 0
-        for time in vals[1:]:
-            exe_time += float(time)
-        avg_exe_time = exe_time/num_times
-
-        grans.append(granularity)
-        times.append(avg_exe_time)
+        if (line[0] != '#'):
+            vals = line[:-1].split()
+            num_times = len(vals) - 1
+            granularity = vals[0]
+            sum_times = 0
+            for time in vals[1:]:
+                sum_times += float(time)
+                avg_time = sum_times/num_times
+            grans.append(granularity)
+            times.append(avg_time)
 
     file.close()
     return np.array(grans).astype(np.float64), np.array(times).astype(np.float64)
@@ -32,8 +31,8 @@ def plot(grans, times, params):
     ax1.scatter(grans, times, color='#00b3b3', label='Observed')
     ax1.plot(grans, power_law(grans, *params), color='black', linestyle='--', linewidth=1.5, label='Fit')
     ax2.scatter(grans, times - power_law(grans, *params), color='#ff0000')
+    ax2.grid(axis='y', linestyle='--', linewidth=0.75)
 
-    ax2.grid(axis='y', linestyle='--', linewidth=0.5)
     ax1.set_title("$C = {:.3f} ns/B \;\;\; \\beta = {:.3f}$".format(params[0] * 1e+9, params[1]))
     plt.xlabel('Processed data (Bytes)')
     plt.ylabel('Time (s)')
@@ -51,7 +50,7 @@ def main(args):
 
     # Perform power regression curve fitting
     params, cov = curve_fit(f=power_law, xdata=grans,
-                            ydata=times, p0=[0, 0], bounds=(-np.inf, np.inf))
+                            ydata=times, p0=[0, 0], bounds=(-np.inf, np.inf), maxfev=1000)
 
     print("Calculated parameters:")
     print("Computational index: %f ns/B" % (params[0] * 1e+9))
