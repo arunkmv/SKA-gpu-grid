@@ -295,8 +295,10 @@ int main(int argc, char** argv) {
    PRECISION2 *gcf = (PRECISION2*) malloc(64*GCF_DIM*GCF_DIM*sizeof(PRECISION2));
 #endif
    int npts=NPOINTS;
+   int data_to_be_processed = sizeof(PRECISION2)*(NPOINTS*(1 + POLARIZATIONS) + 64*GCF_DIM*GCF_DIM);
 
   // ***  Report run parameters ***
+#ifndef __PROF_MODE
    printf("*** GPU Gridding ***\n");
 #ifdef DEBUG1
    printf("\n   Debug\n\n");
@@ -333,7 +335,10 @@ int main(int argc, char** argv) {
    printf("   Computed GCF\n"); 
 #endif
    printf("\n\n\n");
+#endif
 
+
+   std::cout << "data to be processed: " << data_to_be_processed << " bytes" << std::endl;
 
    init_gcf(gcf, GCF_DIM);
 #ifdef __FILE_INPUT
