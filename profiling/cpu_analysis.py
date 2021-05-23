@@ -53,8 +53,8 @@ def main(args):
                             ydata=times, p0=[0, 0], bounds=(-np.inf, np.inf), maxfev=1000)
 
     print("Calculated parameters:")
-    print("Computational index: %f ns/B" % (params[0] * 1e+9))
-    print("Power factor: %f" % params[1])
+    print("Computational index: {:.3f} ns/B".format(params[0] * 1e+9))
+    print("Power factor: {:.5f}".format(params[1]))
     if(args.plot): plot(grans, times, params)
 
 if __name__ == '__main__':
