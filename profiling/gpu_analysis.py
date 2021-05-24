@@ -1,16 +1,19 @@
 #!/usr/bin/env python3
 
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
-from scipy.optimize import curve_fit
+import statistics
 import argparse
 from itertools import cycle
 import re
 
-def avg(lst):
-    return sum(lst)/len(lst)
+def read_prof_file(filename, numtimes, average_strategy):
 
-def read_prof_file(filename, numtimes):
+    avg_funcs = {'mean': statistics.mean,
+                 'median': statistics.median}
+    avg = avg_funcs[average_strategy]
+
     file = open(filename, "r")
     grans = []
     times = []
@@ -103,33 +106,39 @@ def plot(grans, times, gflops, latency, overhead, latency_per_byte):
     axs[0, 1].set_title('GFLOPS')
 
     axs[1, 0].scatter(grans, overhead, color='#3bd80e')
-    axs[0, 1].set(ylabel='Time (ns)')
-    axs[1, 0].set_title("Overhead, $avg = {:.5f} ns$".format(avg(overhead)))
+    axs[1, 0].set(ylabel='Time (ns)')
+    axs[1, 0].set_title("Overhead, $avg = {:.5f} ns$".format(statistics.mean(overhead)))
 
     axs[1, 1].scatter(grans, latency, color='#f38d12')
     axs[1, 1].set(ylabel='Time (ns)')
-    axs[1, 1].set_title("Latency, $avg/B = {:.5f} ps/B$".format(avg(latency_per_byte)))
+    axs[1, 1].set_title("Latency, $avg/B = {:.5f} ps/B$".format(statistics.mean(latency_per_byte)))
 
     plt.xlabel("Processed data (Bytes)")
     plt.show()
 
 def main(args):
     # Read input file
-    grans, times, gflops, latency, overhead = read_prof_file(args.file, args.numtimes)
+    grans, times, gflops, latency, overhead = read_prof_file(args.file, args.numtimes, args.average)
 
     conv = np.vectorize((lambda t,f: t*(10**f)))
     latency_per_byte = np.divide(conv(latency, 3), grans)
 
     print("Calculated parameters:")
-    print("Average latency per byte: {:.5f} ps/B".format(avg(latency_per_byte)))
-    print("Average overhead: {:.5f} ns". format(avg(overhead)))
+    print("Average latency per byte: {:.5f} ps/B".format(statistics.mean(latency_per_byte)))
+    print("Average overhead: {:.5f} ns". format(statistics.mean(overhead)))
+
+    if(args.dumpcsv):
+        df = pd.DataFrame({"processed data (bytes)" : grans, "execution time (ms)" : times, "gflops" : gflops, "overhead (ns)" : overhead, "latency (ns)" : latency})
+        df.to_csv("datadump.csv", index=False)
 
     if(args.plot): plot(grans, times, gflops, latency, overhead, latency_per_byte)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Analyser for the GPU gridding profile data')
     parser.add_argument('-f', '--file', action='store', default='prof_gpu.txt', help='Input profiling data file')
-    parser.add_argument('-p', '--plot', action='store_true', help='To plot graphs')
     parser.add_argument('-n', '--numtimes', action='store', default=5, type=int, help='Number of subsequent runs with same configuration')
+    parser.add_argument('-p', '--plot', action='store_true', help='To plot graphs')
+    parser.add_argument('-d', '--dumpcsv', action='store_true', help='To dump the profiling data as a CSV file')
+    parser.add_argument('-a', '--average', action='store', choices=['mean', 'median'], default='mean', help='Measure of central tendency between subsequent runs with same configuration')
     args = parser.parse_args()
     main(args)
